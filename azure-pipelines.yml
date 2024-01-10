@@ -1,0 +1,65 @@
+trigger: none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+jobs:
+- job: BuildAndPublish
+  steps:
+  - checkout: self
+
+  - script: |
+      sudo apt-get update -y
+      sudo apt install wget -y
+      env
+      wget https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.7.9-stable.tar.xz
+      tar -xvf flutter_linux_3.7.9-stable.tar.xz
+      export PATH="$PATH:`pwd`/flutter/bin"  # Add Flutter to PATH
+      echo 'export PATH="$PATH:`pwd`/flutter/bin"' >> $HOME/.bashrc  # Persist PATH
+      env
+      cd flutter/
+      flutter doctor
+      flutter pub add smooth_star_rating_null_safety
+      flutter packages get
+      flutter --version
+    displayName: 'Install Flutter 3.7.9'
+
+  # - script: |
+  #     echo $PATH
+  #   displayName: 'Display PATH'
+
+  - script: |
+      cat /home/vsts/.pub-cache/hosted/pub.dev/jitsi_meet-4.0.0/android/src/main/kotlin/com/gunschu/jitsi_meet/JitsiMeetPlugin.kt
+    displayName: 'Print Entire Content of JitsiMeetPlugin.kt'
+
+  - script: |
+      sed -i 's/constructor(activity: Activity) : this() {/constructor(activity: Activity?) : this() {/g' /home/vsts/.pub-cache/hosted/pub.dev/jitsi_meet-4.0.0/android/src/main/kotlin/com/gunschu/jitsi_meet/JitsiMeetPlugin.kt
+    displayName: 'Replace Constructor Line'
+
+  # - script: |
+  #     cat /home/vsts/.pub-cache/hosted/pub.dev/jitsi_meet-4.0.0/android/src/main/kotlin/com/gunschu/jitsi_meet/JitsiMeetPlugin.kt
+
+  # - script: |
+  #     rm -f /home/vsts/.pub-cache/hosted/pub.dev/bubble_bottom_bar-2.0.0/lib/bubble_bottom_bar.dart
+  #   displayName: 'Remove Existing File'
+
+  # - task: CopyFiles@2
+  #   inputs:
+  #     sourceFolder: './'
+  #     Contents: 'bubble_bottom_bar.dart'  # Specify the name of the new file
+  #     TargetFolder: '/home/vsts/.pub-cache/hosted/pub.dev/bubble_bottom_bar-2.0.0/lib/'  # Specify the target folder where you want to replace the file
+      
+  - script: |
+      pwd
+      cd $(Build.SourcesDirectory)      
+      /home/vsts/work/1/s/flutter/bin/flutter build apk --release
+    displayName: 'Build APK'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish APK Artifact'
+    inputs:
+      PathtoPublish: '$(Build.SourcesDirectory)/build/app/outputs/flutter-apk'
+      ArtifactName: 'apks'
+      publishLocation: 'Container'
+
+  
