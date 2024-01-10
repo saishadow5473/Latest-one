@@ -1,0 +1,71 @@
+trigger:
+- none
+
+jobs:
+- job: BuildAndPublish
+  pool:
+    vmImage: 'macos-latest'  # Use macOS build agent for iOS development
+  steps:
+  - checkout: self
+    displayName: 'Checkout source code'
+    
+  - script: |
+      brew update
+      brew install wget -y
+      brew install zip -y
+      wget https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_3.7.9-stable.zip
+      unzip flutter_macos_3.7.9-stable.zip
+      export PATH="$PATH:$PWD/flutter/bin"
+      ls -lrt
+      cd flutter/
+      flutter --version
+      flutter --disable-telemetry
+      flutter pub get
+      pwd
+    displayName: 'Install Flutter'
+
+  - script: 
+      cd ios
+      pod repo update
+      pod install
+    displayName: 'Install CocoaPods dependencies'
+
+  - script: |
+      cat ../../../.pub-cache/hosted/pub.dev/badges-2.0.3/lib/src/badge.dart
+    displayName: 'Print badge.dart content before modification'
+
+  - script: 
+      rm -f ../../../.pub-cache/hosted/pub.dev/badges-2.0.3/lib/src/badge.dart
+      
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: './'
+      Contents: 'badge.dart'  
+      TargetFolder: '../../../.pub-cache/hosted/pub.dev/badges-2.0.3/lib/src/'
+    displayName: 'Replace badge.dart'
+
+  - script: 
+      cat ../../../.pub-cache/hosted/pub.dev/badges-2.0.3/lib/src/badge.dart
+    displayName: 'Print badge.dart content after modification'
+
+  - script: |
+      rm -f /Users/runner/work/1/s/.pub-cache/hosted/pub.dev/bubble_bottom_bar-2.0.0/lib/bubble_bottom_bar.dart
+    displayName: 'Remove Existing File'
+
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: './'
+      Contents: 'bubble_bottom_bar.dart'  # Specify the name of the new file
+      TargetFolder: '/Users/runner/work/1/s/.pub-cache/hosted/pub.dev/bubble_bottom_bar-2.0.0/lib/'  # Specify the target folder where you want to replace the file
+    displayName: 'Replace bubble_bottom_bar.dart'
+
+  - script: |
+      cat /Users/runner/work/1/s/.pub-cache/hosted/pub.dev/bubble_bottom_bar-2.0.0/lib/bubble_bottom_bar.dart
+    displayName: 'Print bubble_bottom_bar.dart content after replacement'
+
+  - script: |
+      pwd
+      ls -lrt
+      cd $(Build.SourcesDirectory)      
+      /Users/runner/work/1/s/flutter/bin/flutter build ios
+    displayName: 'Build iOS'
