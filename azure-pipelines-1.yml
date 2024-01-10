@@ -39,15 +39,15 @@ jobs:
   - script: |
       cat /home/vsts/.pub-cache/hosted/pub.dev/jitsi_meet-4.0.0/android/src/main/kotlin/com/gunschu/jitsi_meet/JitsiMeetPlugin.kt
 
-  # - script: |
-  #     rm -f /home/vsts/.pub-cache/hosted/pub.dev/bubble_bottom_bar-2.0.0/lib/bubble_bottom_bar.dart
-  #   displayName: 'Remove Existing File'
+  - script: |
+      rm -f /home/vsts/.pub-cache/hosted/pub.dev/bubble_bottom_bar-2.0.0/lib/bubble_bottom_bar.dart
+    displayName: 'Remove Existing File'
 
-  # - task: CopyFiles@2
-  #   inputs:
-  #     sourceFolder: './'
-  #     Contents: 'bubble_bottom_bar.dart'  # Specify the name of the new file
-  #     TargetFolder: '/home/vsts/.pub-cache/hosted/pub.dev/bubble_bottom_bar-2.0.0/lib/'  # Specify the target folder where you want to replace the file
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: './'
+      Contents: 'bubble_bottom_bar.dart'  # Specify the name of the new file
+      TargetFolder: '/home/vsts/.pub-cache/hosted/pub.dev/bubble_bottom_bar-2.0.0/lib/'  # Specify the target folder where you want to replace the file
       
   - script: |
       pwd
