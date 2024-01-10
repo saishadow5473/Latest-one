@@ -30,23 +30,33 @@ jobs:
       pod install
     displayName: 'Install CocoaPods dependencies'
 
-  - script: |
-      cat ../../../.pub-cache/hosted/pub.dev/badges-2.0.3/lib/src/badge.dart
-    displayName: 'Print badge.dart content before modification'
+  # - script: |
+  #     cat ../../../.pub-cache/hosted/pub.dev/badges-2.0.3/lib/src/badge.dart
+  #   displayName: 'Print badge.dart content before modification'
 
-  - script: 
-      rm -f ../../../.pub-cache/hosted/pub.dev/badges-2.0.3/lib/src/badge.dart
+  # - script: 
+  #     rm -f ../../../.pub-cache/hosted/pub.dev/badges-2.0.3/lib/src/badge.dart
       
-  - task: CopyFiles@2
-    inputs:
-      sourceFolder: './'
-      Contents: 'badge.dart'  
-      TargetFolder: '../../../.pub-cache/hosted/pub.dev/badges-2.0.3/lib/src/'
-    displayName: 'Replace badge.dart'
+  # - task: CopyFiles@2
+  #   inputs:
+  #     sourceFolder: './'
+  #     Contents: 'badge.dart'  
+  #     TargetFolder: '../../../.pub-cache/hosted/pub.dev/badges-2.0.3/lib/src/'
+  #   displayName: 'Replace badge.dart'
 
-  - script: 
-      cat ../../../.pub-cache/hosted/pub.dev/badges-2.0.3/lib/src/badge.dart
-    displayName: 'Print badge.dart content after modification'
+  # - script: 
+  #     cat ../../../.pub-cache/hosted/pub.dev/badges-2.0.3/lib/src/badge.dart
+  #   displayName: 'Print badge.dart content after modification'
+  - script: |
+      cat /Users/runner/work/1/s/.pub-cache/hosted/pub.dev/jitsi_meet-4.0.0/android/src/main/kotlin/com/gunschu/jitsi_meet/JitsiMeetPlugin.kt
+    displayName: 'Print Entire Content of JitsiMeetPlugin.kt'
+
+  - script: |
+      sed -i 's/constructor(activity: Activity) : this() {/constructor(activity: Activity?) : this() {/g' /home/vsts/.pub-cache/hosted/pub.dev/jitsi_meet-4.0.0/android/src/main/kotlin/com/gunschu/jitsi_meet/JitsiMeetPlugin.kt
+    displayName: 'Replace Constructor Line'
+
+  - script: |
+      cat /Users/runner/work/1/s/.pub-cache/hosted/pub.dev/jitsi_meet-4.0.0/android/src/main/kotlin/com/gunschu/jitsi_meet/JitsiMeetPlugin.kt
 
   - script: |
       rm -f /Users/runner/work/1/s/.pub-cache/hosted/pub.dev/bubble_bottom_bar-2.0.0/lib/bubble_bottom_bar.dart
