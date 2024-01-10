@@ -48,7 +48,7 @@ jobs:
   #     cat ../../../.pub-cache/hosted/pub.dev/badges-2.0.3/lib/src/badge.dart
   #   displayName: 'Print badge.dart content after modification'
   - script: |
-      cat /Users/runner/work/1/s/.pub-cache/hosted/pub.dev/jitsi_meet-4.0.0/android/src/main/kotlin/com/gunschu/jitsi_meet/JitsiMeetPlugin.kt
+      cat ../../../.pub-cache/hosted/pub.dev/jitsi_meet-4.0.0/android/src/main/kotlin/com/gunschu/jitsi_meet/JitsiMeetPlugin.kt
     displayName: 'Print Entire Content of JitsiMeetPlugin.kt'
 
   - script: |
@@ -56,7 +56,7 @@ jobs:
     displayName: 'Replace Constructor Line'
 
   - script: |
-      cat /Users/runner/work/1/s/.pub-cache/hosted/pub.dev/jitsi_meet-4.0.0/android/src/main/kotlin/com/gunschu/jitsi_meet/JitsiMeetPlugin.kt
+      cat ../../../.pub-cache/hosted/pub.dev/jitsi_meet-4.0.0/android/src/main/kotlin/com/gunschu/jitsi_meet/JitsiMeetPlugin.kt
 
   - script: |
       rm -f /Users/runner/work/1/s/.pub-cache/hosted/pub.dev/bubble_bottom_bar-2.0.0/lib/bubble_bottom_bar.dart
