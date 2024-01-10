@@ -1,65 +1,71 @@
-trigger: none
-
-pool:
-  vmImage: 'ubuntu-latest'
+trigger:
+- none
 
 jobs:
 - job: BuildAndPublish
+  pool:
+    vmImage: 'macos-latest'  # Use macOS build agent for iOS development
   steps:
   - checkout: self
-
+    displayName: 'Checkout source code'
+    
   - script: |
-      sudo apt-get update -y
-      sudo apt install wget -y
-      env
-      wget https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.7.9-stable.tar.xz
-      tar -xvf flutter_linux_3.7.9-stable.tar.xz
-      export PATH="$PATH:`pwd`/flutter/bin"  # Add Flutter to PATH
-      echo 'export PATH="$PATH:`pwd`/flutter/bin"' >> $HOME/.bashrc  # Persist PATH
-      env
+      brew update
+      brew install wget -y
+      brew install zip -y
+      wget https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_3.7.9-stable.zip
+      unzip flutter_macos_3.7.9-stable.zip
+      export PATH="$PATH:$PWD/flutter/bin"
+      ls -lrt
       cd flutter/
-      flutter doctor
-      flutter pub add smooth_star_rating_null_safety
-      flutter packages get
       flutter --version
-    displayName: 'Install Flutter 3.7.9'
+      flutter --disable-telemetry
+      flutter pub get
+      pwd
+    displayName: 'Install Flutter'
 
-  # - script: |
-  #     echo $PATH
-  #   displayName: 'Display PATH'
+  - script: 
+      cd ios
+      pod repo update
+      pod install
+    displayName: 'Install CocoaPods dependencies'
 
   - script: |
-      cat /home/vsts/.pub-cache/hosted/pub.dev/jitsi_meet-4.0.0/android/src/main/kotlin/com/gunschu/jitsi_meet/JitsiMeetPlugin.kt
-    displayName: 'Print Entire Content of JitsiMeetPlugin.kt'
+      cat ../../../.pub-cache/hosted/pub.dev/badges-2.0.3/lib/src/badge.dart
+    displayName: 'Print badge.dart content before modification'
 
-  - script: |
-      sed -i 's/constructor(activity: Activity) : this() {/constructor(activity: Activity?) : this() {/g' /home/vsts/.pub-cache/hosted/pub.dev/jitsi_meet-4.0.0/android/src/main/kotlin/com/gunschu/jitsi_meet/JitsiMeetPlugin.kt
-    displayName: 'Replace Constructor Line'
-
-  # - script: |
-  #     cat /home/vsts/.pub-cache/hosted/pub.dev/jitsi_meet-4.0.0/android/src/main/kotlin/com/gunschu/jitsi_meet/JitsiMeetPlugin.kt
-
-  # - script: |
-  #     rm -f /home/vsts/.pub-cache/hosted/pub.dev/bubble_bottom_bar-2.0.0/lib/bubble_bottom_bar.dart
-  #   displayName: 'Remove Existing File'
-
-  # - task: CopyFiles@2
-  #   inputs:
-  #     sourceFolder: './'
-  #     Contents: 'bubble_bottom_bar.dart'  # Specify the name of the new file
-  #     TargetFolder: '/home/vsts/.pub-cache/hosted/pub.dev/bubble_bottom_bar-2.0.0/lib/'  # Specify the target folder where you want to replace the file
+  - script: 
+      rm -f ../../../.pub-cache/hosted/pub.dev/badges-2.0.3/lib/src/badge.dart
       
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: './'
+      Contents: 'badge.dart'  
+      TargetFolder: '../../../.pub-cache/hosted/pub.dev/badges-2.0.3/lib/src/'
+    displayName: 'Replace badge.dart'
+
+  - script: 
+      cat ../../../.pub-cache/hosted/pub.dev/badges-2.0.3/lib/src/badge.dart
+    displayName: 'Print badge.dart content after modification'
+
+  - script: |
+      rm -f /Users/runner/work/1/s/.pub-cache/hosted/pub.dev/bubble_bottom_bar-2.0.0/lib/bubble_bottom_bar.dart
+    displayName: 'Remove Existing File'
+
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: './'
+      Contents: 'bubble_bottom_bar.dart'  # Specify the name of the new file
+      TargetFolder: '/Users/runner/work/1/s/.pub-cache/hosted/pub.dev/bubble_bottom_bar-2.0.0/lib/'  # Specify the target folder where you want to replace the file
+    displayName: 'Replace bubble_bottom_bar.dart'
+
+  - script: |
+      cat /Users/runner/work/1/s/.pub-cache/hosted/pub.dev/bubble_bottom_bar-2.0.0/lib/bubble_bottom_bar.dart
+    displayName: 'Print bubble_bottom_bar.dart content after replacement'
+
   - script: |
       pwd
+      ls -lrt
       cd $(Build.SourcesDirectory)      
-      /home/vsts/work/1/s/flutter/bin/flutter build apk --release
-    displayName: 'Build APK'
-
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish APK Artifact'
-    inputs:
-      PathtoPublish: '$(Build.SourcesDirectory)/build/app/outputs/flutter-apk'
-      ArtifactName: 'apks'
-      publishLocation: 'Container'
-
-  
+      /Users/runner/work/1/s/flutter/bin/flutter build ios
+    displayName: 'Build iOS'
