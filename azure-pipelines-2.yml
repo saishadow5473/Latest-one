@@ -52,7 +52,7 @@ jobs:
     displayName: 'Print Entire Content of JitsiMeetPlugin.kt'
 
   - script: |
-      sed -i 's/constructor(activity: Activity) : this() {/constructor(activity: Activity?) : this() {/g' /home/vsts/.pub-cache/hosted/pub.dev/jitsi_meet-4.0.0/android/src/main/kotlin/com/gunschu/jitsi_meet/JitsiMeetPlugin.kt
+      sed -i 's/constructor(activity: Activity) : this() {/constructor(activity: Activity?) : this() {/g' ../../../.pub-cache/hosted/pub.dev/jitsi_meet-4.0.0/android/src/main/kotlin/com/gunschu/jitsi_meet/JitsiMeetPlugin.kt
     displayName: 'Replace Constructor Line'
 
   - script: |
